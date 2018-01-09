@@ -51,17 +51,17 @@ function Test-VirtualMachineExtension
 
         # Storage Account (SA)
         $stoname = 'sto' + $rgname;
-        $stotype = 'Standard_GRS';
+        $stotype = 'Standard_LRS';
         New-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname -Location $loc -Type $stotype;
         Retry-IfException { $global:stoaccount = Get-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname; }
         $stokey = (Get-AzureRmStorageAccountKey -ResourceGroupName $rgname -Name $stoname).Key1;
 
         $osDiskName = 'osDisk';
         $osDiskCaching = 'ReadWrite';
-        $osDiskVhdUri = "https://$stoname.blob.core.windows.net/test/os.vhd";
-        $dataDiskVhdUri1 = "https://$stoname.blob.core.windows.net/test/data1.vhd";
-        $dataDiskVhdUri2 = "https://$stoname.blob.core.windows.net/test/data2.vhd";
-        $dataDiskVhdUri3 = "https://$stoname.blob.core.windows.net/test/data3.vhd";
+        $osDiskVhdUri = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/os.vhd";
+        $dataDiskVhdUri1 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data1.vhd";
+        $dataDiskVhdUri2 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data2.vhd";
+        $dataDiskVhdUri3 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data3.vhd";
 
         $p = Set-AzureRmVMOSDisk -VM $p -Name $osDiskName -VhdUri $osDiskVhdUri -Caching $osDiskCaching -CreateOption FromImage;
 
@@ -89,7 +89,7 @@ function Test-VirtualMachineExtension
         $securePassword = ConvertTo-SecureString $password -AsPlainText -Force;
         $cred = New-Object System.Management.Automation.PSCredential ($user, $securePassword);
         $computerName = 'test';
-        $vhdContainer = "https://$stoname.blob.core.windows.net/test";
+        $vhdContainer = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test";
 
         $p = Set-AzureRmVMOperatingSystem -VM $p -Windows -ComputerName $computerName -Credential $cred -ProvisionVMAgent;
 
@@ -191,17 +191,17 @@ function Test-VirtualMachineExtensionUsingHashTable
 
         # Storage Account (SA)
         $stoname = 'sto' + $rgname;
-        $stotype = 'Standard_GRS';
+        $stotype = 'Standard_LRS';
         New-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname -Location $loc -Type $stotype;
         Retry-IfException { $global:stoaccount = Get-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname; }
         $stokey = (Get-AzureRmStorageAccountKey -ResourceGroupName $rgname -Name $stoname).Key1;
 
         $osDiskName = 'osDisk';
         $osDiskCaching = 'ReadWrite';
-        $osDiskVhdUri = "https://$stoname.blob.core.windows.net/test/os.vhd";
-        $dataDiskVhdUri1 = "https://$stoname.blob.core.windows.net/test/data1.vhd";
-        $dataDiskVhdUri2 = "https://$stoname.blob.core.windows.net/test/data2.vhd";
-        $dataDiskVhdUri3 = "https://$stoname.blob.core.windows.net/test/data3.vhd";
+        $osDiskVhdUri = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/os.vhd";
+        $dataDiskVhdUri1 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data1.vhd";
+        $dataDiskVhdUri2 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data2.vhd";
+        $dataDiskVhdUri3 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data3.vhd";
 
         $p = Set-AzureRmVMOSDisk -VM $p -Name $osDiskName -VhdUri $osDiskVhdUri -Caching $osDiskCaching -CreateOption FromImage;
 
@@ -229,7 +229,7 @@ function Test-VirtualMachineExtensionUsingHashTable
         $securePassword = ConvertTo-SecureString $password -AsPlainText -Force;
         $cred = New-Object System.Management.Automation.PSCredential ($user, $securePassword);
         $computerName = 'test';
-        $vhdContainer = "https://$stoname.blob.core.windows.net/test";
+        $vhdContainer = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test";
 
         $p = Set-AzureRmVMOperatingSystem -VM $p -Windows -ComputerName $computerName -Credential $cred -ProvisionVMAgent;
 
@@ -357,16 +357,16 @@ function Test-VirtualMachineCustomScriptExtension
 
         # Storage Account (SA)
         $stoname = 'sto' + $rgname;
-        $stotype = 'Standard_GRS';
+        $stotype = 'Standard_LRS';
         New-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname -Location $loc -Type $stotype;
         Retry-IfException { $global:stoaccount = Get-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname; }
         $stokey = (Get-AzureRmStorageAccountKey -ResourceGroupName $rgname -Name $stoname).Key1;
 
         $osDiskName = 'osDisk';
         $osDiskCaching = 'ReadWrite';
-        $osDiskVhdUri = "https://$stoname.blob.core.windows.net/test/os.vhd";
-        $dataDiskVhdUri1 = "https://$stoname.blob.core.windows.net/test/data1.vhd";
-        $dataDiskVhdUri2 = "https://$stoname.blob.core.windows.net/test/data2.vhd";
+        $osDiskVhdUri = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/os.vhd";
+        $dataDiskVhdUri1 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data1.vhd";
+        $dataDiskVhdUri2 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data2.vhd";
 
         $p = Set-AzureRmVMOSDisk -VM $p -Name $osDiskName -VhdUri $osDiskVhdUri -Caching $osDiskCaching -CreateOption FromImage;
 
@@ -392,7 +392,7 @@ function Test-VirtualMachineCustomScriptExtension
         $securePassword = ConvertTo-SecureString $password -AsPlainText -Force;
         $cred = New-Object System.Management.Automation.PSCredential ($user, $securePassword);
         $computerName = 'test';
-        $vhdContainer = "https://$stoname.blob.core.windows.net/test";
+        $vhdContainer = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test";
 
         $p = Set-AzureRmVMOperatingSystem -VM $p -Windows -ComputerName $computerName -Credential $cred -ProvisionVMAgent;
 
@@ -417,20 +417,29 @@ function Test-VirtualMachineCustomScriptExtension
 
         # Virtual Machine Extension
         $extname = $rgname + 'ext';
-        $extver = '1.1';
+        $extver = '1.8';
         $publisher = 'Microsoft.Compute';
         $exttype = 'CustomScriptExtension';
-        $fileToExecute = 'a.exe';
+        $fileToExecute = 'a.ps1';
         $containerName = 'script';
 
-        # Set custom script extension
-        Set-AzureRmVMCustomScriptExtension -ResourceGroupName $rgname -Location $loc -VMName $vmname -Name $extname -TypeHandlerVersion $extver -StorageAccountName $stoname -StorageAccountKey $stokey -FileName $fileToExecute -ContainerName $containerName;
+		#upload file to storage container
+		$StorageContext = New-AzureStorageContext -StorageAccountName $stoname -StorageAccountKey $stokey -Endpoint $env:STORAGEENDPOINTSUFFIX;
+		New-AzureStorageContainer -Context $StorageContext -Name script;
+		$UploadFile = @{
+			Context = $StorageContext;
+			Container = 'script';
+			File = ".\uploadfiles\a.ps1";
+		}
+		Set-AzureStorageBlobContent @UploadFile;
 
+        # Set custom script extension
+        Set-AzureRmVMCustomScriptExtension -ResourceGroupName $rgname -Location $loc -VMName $vmname -Name $extname -TypeHandlerVersion $extver -StorageAccountName $stoname -StorageAccountKey $stokey -FileName $fileToExecute -ContainerName $containerName -StorageEndpointSuffix $env:STORAGEENDPOINTSUFFIX;
         # Get VM Extension
         $ext = Get-AzureRmVMCustomScriptExtension -ResourceGroupName $rgname -VMName $vmname -Name $extname;
 
         $expCommand = 'powershell -ExecutionPolicy Unrestricted -file ' + $fileToExecute + ' ';
-        $expUri = $stoname + '.blob.core.windows.net/' + $containerName + '/' + $fileToExecute;
+        $expUri = $stoname + '.blob.$env:STORAGEENDPOINTSUFFIX/' + $containerName + '/' + $fileToExecute;
         Assert-AreEqual $ext.ResourceGroupName $rgname;
         Assert-AreEqual $ext.Name $extname;
         Assert-AreEqual $ext.Publisher $publisher;
@@ -482,7 +491,7 @@ function Test-VirtualMachineCustomScriptExtension
     finally
     {
         # Cleanup
-        Clean-ResourceGroup $rgname
+        #Clean-ResourceGroup $rgname
     }
 }
 
@@ -525,16 +534,16 @@ function Test-VirtualMachineCustomScriptExtensionSecureExecution
 
         # Storage Account (SA)
         $stoname = 'sto' + $rgname;
-        $stotype = 'Standard_GRS';
+        $stotype = 'Standard_LRS';
         New-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname -Location $loc -Type $stotype;
         Retry-IfException { $global:stoaccount = Get-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname; }
         $stokey = (Get-AzureRmStorageAccountKey -ResourceGroupName $rgname -Name $stoname).Key1;
 
         $osDiskName = 'osDisk';
         $osDiskCaching = 'ReadWrite';
-        $osDiskVhdUri = "https://$stoname.blob.core.windows.net/test/os.vhd";
-        $dataDiskVhdUri1 = "https://$stoname.blob.core.windows.net/test/data1.vhd";
-        $dataDiskVhdUri2 = "https://$stoname.blob.core.windows.net/test/data2.vhd";
+        $osDiskVhdUri = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/os.vhd";
+        $dataDiskVhdUri1 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data1.vhd";
+        $dataDiskVhdUri2 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data2.vhd";
 
         $p = Set-AzureRmVMOSDisk -VM $p -Name $osDiskName -VhdUri $osDiskVhdUri -Caching $osDiskCaching -CreateOption FromImage;
 
@@ -560,7 +569,7 @@ function Test-VirtualMachineCustomScriptExtensionSecureExecution
         $securePassword = ConvertTo-SecureString $password -AsPlainText -Force;
         $cred = New-Object System.Management.Automation.PSCredential ($user, $securePassword);
         $computerName = 'test';
-        $vhdContainer = "https://$stoname.blob.core.windows.net/test";
+        $vhdContainer = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test";
 
         $p = Set-AzureRmVMOperatingSystem -VM $p -Windows -ComputerName $computerName -Credential $cred -ProvisionVMAgent;
 
@@ -593,7 +602,7 @@ function Test-VirtualMachineCustomScriptExtensionSecureExecution
         $ext = Get-AzureRmVMCustomScriptExtension -ResourceGroupName $rgname -VMName $vmname -Name $extname;
 
         $expCommand = 'powershell -ExecutionPolicy Unrestricted -file ' + $fileToExecute + ' ';
-        $expUri = $stoname + '.blob.core.windows.net/' + $containerName + '/' + $fileToExecute;
+        $expUri = $stoname + '.blob.$env:STORAGEENDPOINTSUFFIX/' + $containerName + '/' + $fileToExecute;
         Assert-AreEqual $ext.ResourceGroupName $rgname;
         Assert-AreEqual $ext.Name $extname;
         Assert-AreEqual $ext.Publisher $publisher;
@@ -649,16 +658,16 @@ function Test-VirtualMachineCustomScriptExtensionFileUri
 
         # Storage Account (SA)
         $stoname = 'sto' + $rgname;
-        $stotype = 'Standard_GRS';
+        $stotype = 'Standard_LRS';
         New-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname -Location $loc -Type $stotype;
         Retry-IfException { $global:stoaccount = Get-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname; }
         $stokey = (Get-AzureRmStorageAccountKey -ResourceGroupName $rgname -Name $stoname).Key1;
 
         $osDiskName = 'osDisk';
         $osDiskCaching = 'ReadWrite';
-        $osDiskVhdUri = "https://$stoname.blob.core.windows.net/test/os.vhd";
-        $dataDiskVhdUri1 = "https://$stoname.blob.core.windows.net/test/data1.vhd";
-        $dataDiskVhdUri2 = "https://$stoname.blob.core.windows.net/test/data2.vhd";
+        $osDiskVhdUri = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/os.vhd";
+        $dataDiskVhdUri1 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data1.vhd";
+        $dataDiskVhdUri2 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data2.vhd";
 
         $p = Set-AzureRmVMOSDisk -VM $p -Name $osDiskName -VhdUri $osDiskVhdUri -Caching $osDiskCaching -CreateOption FromImage;
 
@@ -684,7 +693,7 @@ function Test-VirtualMachineCustomScriptExtensionFileUri
         $securePassword = ConvertTo-SecureString $password -AsPlainText -Force;
         $cred = New-Object System.Management.Automation.PSCredential ($user, $securePassword);
         $computerName = 'test';
-        $vhdContainer = "https://$stoname.blob.core.windows.net/test";
+        $vhdContainer = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test";
 
         $p = Set-AzureRmVMOperatingSystem -VM $p -Windows -ComputerName $computerName -Credential $cred -ProvisionVMAgent;
 
@@ -699,14 +708,46 @@ function Test-VirtualMachineCustomScriptExtensionFileUri
         # Virtual Machine
         New-AzureRmVM -ResourceGroupName $rgname -Location $loc -VM $p;
 
+
+		# Virtual Machine Extension
+        $extname = $rgname + 'ext';
+        $extver = '1.8';
+        $publisher = 'Microsoft.Compute';
+        $exttype = 'CustomScriptExtension';
+        $fileToExecute = 'a.ps1';
+        $containerName = 'script';
+
+		#upload file to storage container
+		$StorageContext = New-AzureStorageContext -StorageAccountName $stoname -StorageAccountKey $stokey -Endpoint $env:STORAGEENDPOINTSUFFIX
+		New-AzureStorageContainer -Context $StorageContext -Name script;
+		$UploadFile = @{
+			Context = $StorageContext;
+			Container = 'script';
+			File = ".\uploadfiles\a.ps1";
+		}
+		Set-AzureStorageBlobContent @UploadFile;
+
+
+
         # Virtual Machine Extension
         $extname = $rgname + 'ext';
-        $extver = '1.1';
+        $extver = '1.8';
         $publisher = 'Microsoft.Compute';
         $exttype = 'CustomScriptExtension';
         $containerName = 'scripts';
-        $fileToExecute = 'test1.ps1';
-        $duration = New-Object -TypeName TimeSpan(2,0,0);
+        $fileToExecute = 'a.ps1';
+
+		#upload file to storage container
+		$StorageContext = New-AzureStorageContext -StorageAccountName $stoname -StorageAccountKey $stokey
+		New-AzureStorageContainer -Context $StorageContext -Name script;
+		$UploadFile = @{
+			Context = $StorageContext;
+			Container = $containerName;
+			File = ".\uploadfiles\a.ps1";
+		}
+		Set-AzureStorageBlobContent @UploadFile;
+
+		$duration = New-Object -TypeName TimeSpan(2,0,0);
         $type = [Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPermissions]::Read;
 
         $sasFile1 = Get-SasUri $stoname $stokey $containerName $fileToExecute $duration $type;
@@ -719,7 +760,7 @@ function Test-VirtualMachineCustomScriptExtensionFileUri
         $ext = Get-AzureRmVMCustomScriptExtension -ResourceGroupName $rgname -VMName $vmname -Name $extname;
 
         $expCommand = 'powershell -ExecutionPolicy Unrestricted -file ' + $fileToExecute+ ' ';
-        $expUri = $stoname + '.blob.core.windows.net/' + $containerName + '/' + $fileToExecute;
+        $expUri = $stoname + '.blob.$env:STORAGEENDPOINTSUFFIX/' + $containerName + '/' + $fileToExecute;
         Assert-AreEqual $ext.ResourceGroupName $rgname;
         Assert-AreEqual $ext.Name $extname;
         Assert-AreEqual $ext.Publisher $publisher;
@@ -807,16 +848,16 @@ function Test-VirtualMachineAccessExtension
 
         # Storage Account (SA)
         $stoname = 'sto' + $rgname;
-        $stotype = 'Standard_GRS';
+        $stotype = 'Standard_LRS';
         New-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname -Location $loc -Type $stotype;
         Retry-IfException { $global:stoaccount = Get-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname; }
         $stokey = (Get-AzureRmStorageAccountKey -ResourceGroupName $rgname -Name $stoname).Key1;
 
         $osDiskName = 'osDisk';
         $osDiskCaching = 'ReadWrite';
-        $osDiskVhdUri = "https://$stoname.blob.core.windows.net/test/os.vhd";
-        $dataDiskVhdUri1 = "https://$stoname.blob.core.windows.net/test/data1.vhd";
-        $dataDiskVhdUri2 = "https://$stoname.blob.core.windows.net/test/data2.vhd";
+        $osDiskVhdUri = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/os.vhd";
+        $dataDiskVhdUri1 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data1.vhd";
+        $dataDiskVhdUri2 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data2.vhd";
 
         $p = Set-AzureRmVMOSDisk -VM $p -Name $osDiskName -VhdUri $osDiskVhdUri -Caching $osDiskCaching -CreateOption FromImage;
 
@@ -842,7 +883,7 @@ function Test-VirtualMachineAccessExtension
         $securePassword = ConvertTo-SecureString $password -AsPlainText -Force;
         $cred = New-Object System.Management.Automation.PSCredential ($user, $securePassword);
         $computerName = 'test';
-        $vhdContainer = "https://$stoname.blob.core.windows.net/test";
+        $vhdContainer = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test";
 
         $p = Set-AzureRmVMOperatingSystem -VM $p -Windows -ComputerName $computerName -Credential $cred -ProvisionVMAgent;
 
@@ -1008,8 +1049,8 @@ function Test-AzureDiskEncryptionExtension
         New-AzureRmStorageAccount -ResourceGroupName $rgname -Name $storageAccountName -Location $loc -Type $stotype;
         $stokey = (Get-AzureRmStorageAccountKey -ResourceGroupName $rgname -Name $storageAccountName).Key1;
 
-        $osDiskVhdUri = "https://$storageAccountName.blob.core.windows.net/$vhdContainerName/$osDiskName.vhd";
-        $dataDiskVhdUri = "https://$storageAccountName.blob.core.windows.net/$vhdContainerName/$dataDiskName.vhd";
+        $osDiskVhdUri = "https://$storageAccountName.blob.$env:STORAGEENDPOINTSUFFIX/$vhdContainerName/$osDiskName.vhd";
+        $dataDiskVhdUri = "https://$storageAccountName.blob.$env:STORAGEENDPOINTSUFFIX/$vhdContainerName/$dataDiskName.vhd";
 
         $p = Set-AzureRmVMOSDisk -VM $p -Name $osDiskName -VhdUri $osDiskVhdUri -Caching $osDiskCaching -CreateOption FromImage;
         $p = Add-AzureRmVMDataDisk -VM $p -Name $dataDiskName -Caching 'ReadOnly' -DiskSizeInGB 2 -Lun 1 -VhdUri $dataDiskVhdUri -CreateOption Empty;
@@ -1018,7 +1059,7 @@ function Test-AzureDiskEncryptionExtension
         $securePassword = ConvertTo-SecureString $adminPassword -AsPlainText -Force;
         $cred = New-Object System.Management.Automation.PSCredential ($adminUser, $securePassword);
         $computerName = $vmName;
-        $vhdContainer = "https://$storageAccountName.blob.core.windows.net/$vhdContainerName";
+        $vhdContainer = "https://$storageAccountName.blob.$env:STORAGEENDPOINTSUFFIX/$vhdContainerName";
 
         $p = Set-AzureRmVMOperatingSystem -VM $p -Windows -ComputerName $computerName -Credential $cred -ProvisionVMAgent;
         $p = Set-AzureRmVMSourceImage -VM $p -PublisherName $imagePublisher -Offer $imageOffer -Skus $imageSku -Version "latest";
@@ -1090,16 +1131,16 @@ function Test-VirtualMachineBginfoExtension
 
         # Storage Account (SA)
         $stoname = 'sto' + $rgname;
-        $stotype = 'Standard_GRS';
+        $stotype = 'Standard_LRS';
         New-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname -Location $loc -Type $stotype;
         Retry-IfException { $global:stoaccount = Get-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname; }
         $stokey = (Get-AzureRmStorageAccountKey -ResourceGroupName $rgname -Name $stoname).Key1;
 
         $osDiskName = 'osDisk';
         $osDiskCaching = 'ReadWrite';
-        $osDiskVhdUri = "https://$stoname.blob.core.windows.net/test/os.vhd";
-        $dataDiskVhdUri1 = "https://$stoname.blob.core.windows.net/test/data1.vhd";
-        $dataDiskVhdUri2 = "https://$stoname.blob.core.windows.net/test/data2.vhd";
+        $osDiskVhdUri = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/os.vhd";
+        $dataDiskVhdUri1 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data1.vhd";
+        $dataDiskVhdUri2 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data2.vhd";
 
         $p = Set-AzureRmVMOSDisk -VM $p -Name $osDiskName -VhdUri $osDiskVhdUri -Caching $osDiskCaching -CreateOption FromImage;
 
@@ -1125,7 +1166,7 @@ function Test-VirtualMachineBginfoExtension
         $securePassword = ConvertTo-SecureString $password -AsPlainText -Force;
         $cred = New-Object System.Management.Automation.PSCredential ($user, $securePassword);
         $computerName = 'test';
-        $vhdContainer = "https://$stoname.blob.core.windows.net/test";
+        $vhdContainer = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test";
 
         $p = Set-AzureRmVMOperatingSystem -VM $p -Windows -ComputerName $computerName -Credential $cred -ProvisionVMAgent;
 
@@ -1243,16 +1284,16 @@ function Test-VirtualMachineExtensionWithSwitch
 
         # Storage Account (SA)
         $stoname = 'sto' + $rgname;
-        $stotype = 'Standard_GRS';
+        $stotype = 'Standard_LRS';
         New-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname -Location $loc -Type $stotype;
         Retry-IfException { $global:stoaccount = Get-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname; }
         $stokey = (Get-AzureRmStorageAccountKey -ResourceGroupName $rgname -Name $stoname).Key1;
 
         $osDiskName = 'osDisk';
         $osDiskCaching = 'ReadWrite';
-        $osDiskVhdUri = "https://$stoname.blob.core.windows.net/test/os.vhd";
-        $dataDiskVhdUri1 = "https://$stoname.blob.core.windows.net/test/data1.vhd";
-        $dataDiskVhdUri2 = "https://$stoname.blob.core.windows.net/test/data2.vhd";
+        $osDiskVhdUri = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/os.vhd";
+        $dataDiskVhdUri1 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data1.vhd";
+        $dataDiskVhdUri2 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data2.vhd";
 
         $p = Set-AzureRmVMOSDisk -VM $p -Name $osDiskName -VhdUri $osDiskVhdUri -Caching $osDiskCaching -CreateOption FromImage;
 
@@ -1278,7 +1319,7 @@ function Test-VirtualMachineExtensionWithSwitch
         $securePassword = ConvertTo-SecureString $password -AsPlainText -Force;
         $cred = New-Object System.Management.Automation.PSCredential ($user, $securePassword);
         $computerName = 'test';
-        $vhdContainer = "https://$stoname.blob.core.windows.net/test";
+        $vhdContainer = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test";
 
         $p = Set-AzureRmVMOperatingSystem -VM $p -Windows -ComputerName $computerName -Credential $cred -ProvisionVMAgent;
 
@@ -1302,10 +1343,10 @@ function Test-VirtualMachineExtensionWithSwitch
         $extname = 'csetest';
         $publisher = 'Microsoft.Compute';
         $exttype = 'CustomScriptExtension';
-        $extver = '1.1';
+        $extver = '1.8';
 
         # Set extension settings by raw strings
-        $settingstr = '{"fileUris":[],"commandToExecute":""}';
+        $settingstr = '{"fileUris":[],"commandToExecute":"md c:\\users\\public\\documents\\test"}';
         $protectedsettingstr = '{"storageAccountName":"' + $stoname + '","storageAccountKey":"' + $stokey + '"}';
         Set-AzureRmVMExtension -ResourceGroupName $rgname -Location $loc -VMName $vmname `
             -Name $extname -Publisher $publisher `

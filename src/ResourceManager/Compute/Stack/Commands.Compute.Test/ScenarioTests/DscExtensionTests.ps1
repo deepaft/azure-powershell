@@ -43,14 +43,14 @@ function Test-GetAzureRmVMDscExtension
 
         # Storage Account 
         $stoname = 'sto' + $rgname;
-        $stotype = 'Standard_GRS';
+        $stotype = 'Standard_LRS';
         New-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname -Location $loc -Type $stotype;
         Retry-IfException { $global:stoaccount = Get-AzureRmStorageAccount -ResourceGroupName $rgname -Name $stoname; }
         
         $osDiskName = 'osDisk';
         $osDiskCaching = 'ReadWrite';
-        $osDiskVhdUri = "https://$stoname.blob.core.windows.net/test/os.vhd";
-        $dataDiskVhdUri1 = "https://$stoname.blob.core.windows.net/test/data1.vhd";
+        $osDiskVhdUri = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/os.vhd";
+        $dataDiskVhdUri1 = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test/data1.vhd";
         
         $p = Set-AzureRmVMOSDisk -VM $p -Name $osDiskName -VhdUri $osDiskVhdUri -Caching $osDiskCaching -CreateOption FromImage;
         $p = Add-AzureRmVMDataDisk -VM $p -Name 'testDataDisk1' -Caching 'ReadOnly' -DiskSizeInGB 10 -Lun 1 -VhdUri $dataDiskVhdUri1 -CreateOption Empty;
@@ -61,7 +61,7 @@ function Test-GetAzureRmVMDscExtension
         $securePassword = ConvertTo-SecureString $password -AsPlainText -Force;
         $cred = New-Object System.Management.Automation.PSCredential ($user, $securePassword);
         $computerName = 'test';
-        $vhdContainer = "https://$stoname.blob.core.windows.net/test";
+        $vhdContainer = "https://$stoname.blob.$env:STORAGEENDPOINTSUFFIX/test";
 
         $p = Set-AzureRmVMOperatingSystem -VM $p -Windows -ComputerName $computerName -Credential $cred -ProvisionVMAgent;
 
@@ -80,7 +80,7 @@ function Test-GetAzureRmVMDscExtension
         #Publish-AzureRmVMDscConfiguration -ConfigurationPath $configPath -ResourceGroupName $rgname -StorageAccountName $stoname -Force -Verbose
 
         #Install DSC Extension handler
-        Set-AzureRmVMDscExtension -ResourceGroupName $rgname -VMName $vmname -ArchiveBlobName $null -ArchiveStorageAccountName $stoname -Version $version -Force -Location $loc
+        Set-AzureRmVMDscExtension -ResourceGroupName $rgname -VMName $vmname -ArchiveBlobName $null -ArchiveStorageAccountName $stoname -Version $version -Force -Location $loc -AutoUpdate
 
         $extension = Get-AzureRmVMDscExtension -ResourceGroupName $rgname -VMName $vmname 
         Assert-NotNull $extension

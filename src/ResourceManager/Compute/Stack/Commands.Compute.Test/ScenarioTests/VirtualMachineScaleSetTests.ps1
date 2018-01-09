@@ -62,12 +62,13 @@ function Test-VirtualMachineScaleSet
     try
     {
         # Common
-        $loc = 'westus';
+        $loc = Get-ComputeVMLocation;
+
         New-AzureRMResourceGroup -Name $rgname -Location $loc -Force;
 
         # SRP
         $stoname = 'sto' + $rgname;
-        $stotype = 'Standard_GRS';
+        $stotype = 'Standard_LRS';
         New-AzureRMStorageAccount -ResourceGroupName $rgname -Name $stoname -Location $loc -Type $stotype;
         $stoaccount = Get-AzureRMStorageAccount -ResourceGroupName $rgname -Name $stoname;
 
@@ -127,7 +128,7 @@ function Test-VirtualMachineScaleSet
         $adminPassword = "BaR@123" + $rgname;
 
         $imgRef = Get-DefaultCRPImage -loc $loc;
-        $vhdContainer = "https://" + $stoname + ".blob.core.windows.net/" + $vmssName;
+        $vhdContainer = "https://" + $stoname + ".blob.$env:STORAGEENDPOINTSUFFIX/" + $vmssName;
 
         $extname = 'csetest';
         $publisher = 'Microsoft.Compute';
@@ -275,12 +276,13 @@ function Test-VirtualMachineScaleSetReimageUpdate
     try
     {
         # Common
-        $loc = 'westus';
+        $loc = Get-ComputeVMLocation;
+
         New-AzureRMResourceGroup -Name $rgname -Location $loc -Force;
 
         # SRP
         $stoname = 'sto' + $rgname;
-        $stotype = 'Standard_GRS';
+        $stotype = 'Standard_LRS';
         New-AzureRMStorageAccount -ResourceGroupName $rgname -Name $stoname -Location $loc -Type $stotype;
         $stoaccount = Get-AzureRMStorageAccount -ResourceGroupName $rgname -Name $stoname;
 
@@ -298,7 +300,7 @@ function Test-VirtualMachineScaleSetReimageUpdate
         $adminPassword = "BaR@123" + $rgname;
 
         $imgRef = Get-DefaultCRPImage -loc $loc;
-        $vhdContainer = "https://" + $stoname + ".blob.core.windows.net/" + $vmssName;
+        $vhdContainer = "https://" + $stoname + ".blob.$env:STORAGEENDPOINTSUFFIX/" + $vmssName;
 
         $aucComponentName="Microsoft-Windows-Shell-Setup";
         $aucComponentName="MicrosoftWindowsShellSetup";
