@@ -110,7 +110,7 @@ function Test-VirtualMachineExtension
         New-AzureRmVM -ResourceGroupName $rgname -Location $loc -VM $p;
 
         # Virtual Machine Extension
-        $extname = 'csetest';
+        $extname = $rgname + 'ext';
         $publisher = 'Microsoft.Compute';
         $exttype = 'CustomScriptExtension';
         $extver = '1.1';
@@ -421,32 +421,30 @@ function Test-VirtualMachineCustomScriptExtension
         $publisher = 'Microsoft.Compute';
         $exttype = 'CustomScriptExtension';
         $fileToExecute = 'a.ps1';
-        $containerName = 'script';
+        $containerName = 'cont' + $rgname;
 
 		#upload file to storage container
-		$StorageContext = New-AzureStorageContext -StorageAccountName $stoname -StorageAccountKey $stokey -Endpoint $env:STORAGEENDPOINTSUFFIX;
-		New-AzureStorageContainer -Context $StorageContext -Name script;
-		$UploadFile = @{
-			Context = $StorageContext;
-			Container = 'script';
-			File = ".\uploadfiles\a.ps1";
-		}
-		Set-AzureStorageBlobContent @UploadFile;
+		#Uncomment this before recording
+		#Upload-FileToStorageContainer -stoname $stoname -stokey $stokey -containerName $containerName -fileName ".\uploadfiles\a.ps1";
 
-        # Set custom script extension
+		# Set custom script extension
         Set-AzureRmVMCustomScriptExtension -ResourceGroupName $rgname -Location $loc -VMName $vmname -Name $extname -TypeHandlerVersion $extver -StorageAccountName $stoname -StorageAccountKey $stokey -FileName $fileToExecute -ContainerName $containerName -StorageEndpointSuffix $env:STORAGEENDPOINTSUFFIX;
         # Get VM Extension
         $ext = Get-AzureRmVMCustomScriptExtension -ResourceGroupName $rgname -VMName $vmname -Name $extname;
 
         $expCommand = 'powershell -ExecutionPolicy Unrestricted -file ' + $fileToExecute + ' ';
-        $expUri = $stoname + '.blob.$env:STORAGEENDPOINTSUFFIX/' + $containerName + '/' + $fileToExecute;
+        $expUri = $stoname + ".blob.$env:STORAGEENDPOINTSUFFIX/" + $containerName + '/' + $fileToExecute;
         Assert-AreEqual $ext.ResourceGroupName $rgname;
         Assert-AreEqual $ext.Name $extname;
         Assert-AreEqual $ext.Publisher $publisher;
         Assert-AreEqual $ext.ExtensionType $exttype;
         Assert-AreEqual $ext.TypeHandlerVersion $extver;
+		#AzureInconsistent
         Assert-AreEqual $ext.CommandToExecute $expCommand;
-        Assert-True {$ext.Uri[0].Contains($expUri)};
+		#Assert-True {$ext.PublicSettings.Contains($expCommand)};
+        #AzureInconsistent
+		Assert-True {$ext.Uri[0].Contains($expUri)};
+		#Assert-True {$ext.PublicSettings.Contains($expUri)};
         Assert-NotNull $ext.ProvisioningState;
 
         $ext = Get-AzureRmVMCustomScriptExtension -ResourceGroupName $rgname -VMName $vmname -Name $extname -Status;
@@ -455,10 +453,13 @@ function Test-VirtualMachineCustomScriptExtension
         Assert-AreEqual $ext.Publisher $publisher;
         Assert-AreEqual $ext.ExtensionType $exttype;
         Assert-AreEqual $ext.TypeHandlerVersion $extver;
+
         Assert-AreEqual $ext.CommandToExecute $expCommand;
-        Assert-True {$ext.Uri[0].Contains($expUri)};
+		Assert-True {$ext.Uri[0].Contains($expUri)};
+		#Assert-True {$ext.PublicSettings.Contains($expUri)};
+
         Assert-NotNull $ext.ProvisioningState;
-        Assert-NotNull $ext.Statuses;
+		Assert-NotNull $ext.Statuses;
 
         # Get VM
         $vm1 = Get-AzureRmVM -Name $vmname -ResourceGroupName $rgname;
@@ -491,7 +492,7 @@ function Test-VirtualMachineCustomScriptExtension
     finally
     {
         # Cleanup
-        #Clean-ResourceGroup $rgname
+        Clean-ResourceGroup $rgname
     }
 }
 
@@ -586,23 +587,28 @@ function Test-VirtualMachineCustomScriptExtensionSecureExecution
 
         # Virtual Machine Extension
         $extname = $rgname + 'ext';
-        $extver = '1.1';
+        $extver = '1.8';
         $publisher = 'Microsoft.Compute';
         $exttype = 'CustomScriptExtension';
-        $fileToExecute = 'a.exe';
-        $containerName = 'script';
+        $fileToExecute = 'a.ps1';
+        $containerName = 'cont' + $rgname;
+
+		#upload file to storage container
+		#Uncomment this before recording
+		#Upload-FileToStorageContainer -stoname $stoname -stokey $stokey -containerName $containerName -fileName ".\uploadfiles\a.ps1";
 
         # Set custom script extension
         Set-AzureRmVMCustomScriptExtension -ResourceGroupName $rgname -Location $loc -VMName $vmname `
             -Name $extname -TypeHandlerVersion $extver `
             -StorageAccountName $stoname -StorageAccountKey $stokey `
-            -FileName $fileToExecute -ContainerName $containerName -SecureExecution;
+            -FileName $fileToExecute -ContainerName $containerName -SecureExecution `
+			-StorageEndpointSuffix $env:STORAGEENDPOINTSUFFIX;;
 
         # Get VM Extension
         $ext = Get-AzureRmVMCustomScriptExtension -ResourceGroupName $rgname -VMName $vmname -Name $extname;
 
         $expCommand = 'powershell -ExecutionPolicy Unrestricted -file ' + $fileToExecute + ' ';
-        $expUri = $stoname + '.blob.$env:STORAGEENDPOINTSUFFIX/' + $containerName + '/' + $fileToExecute;
+        $expUri = $stoname + ".blob.$env:STORAGEENDPOINTSUFFIX/" + $containerName + '/' + $fileToExecute;
         Assert-AreEqual $ext.ResourceGroupName $rgname;
         Assert-AreEqual $ext.Name $extname;
         Assert-AreEqual $ext.Publisher $publisher;
@@ -715,37 +721,11 @@ function Test-VirtualMachineCustomScriptExtensionFileUri
         $publisher = 'Microsoft.Compute';
         $exttype = 'CustomScriptExtension';
         $fileToExecute = 'a.ps1';
-        $containerName = 'script';
+        $containerName = 'cont' + $rgname;
 
 		#upload file to storage container
-		$StorageContext = New-AzureStorageContext -StorageAccountName $stoname -StorageAccountKey $stokey -Endpoint $env:STORAGEENDPOINTSUFFIX
-		New-AzureStorageContainer -Context $StorageContext -Name script;
-		$UploadFile = @{
-			Context = $StorageContext;
-			Container = 'script';
-			File = ".\uploadfiles\a.ps1";
-		}
-		Set-AzureStorageBlobContent @UploadFile;
-
-
-
-        # Virtual Machine Extension
-        $extname = $rgname + 'ext';
-        $extver = '1.8';
-        $publisher = 'Microsoft.Compute';
-        $exttype = 'CustomScriptExtension';
-        $containerName = 'scripts';
-        $fileToExecute = 'a.ps1';
-
-		#upload file to storage container
-		$StorageContext = New-AzureStorageContext -StorageAccountName $stoname -StorageAccountKey $stokey
-		New-AzureStorageContainer -Context $StorageContext -Name script;
-		$UploadFile = @{
-			Context = $StorageContext;
-			Container = $containerName;
-			File = ".\uploadfiles\a.ps1";
-		}
-		Set-AzureStorageBlobContent @UploadFile;
+		#Uncomment this before recording
+		#Upload-FileToStorageContainer -stoname $stoname -stokey $stokey -containerName $containerName -fileName ".\uploadfiles\a.ps1";
 
 		$duration = New-Object -TypeName TimeSpan(2,0,0);
         $type = [Microsoft.WindowsAzure.Storage.Blob.SharedAccessBlobPermissions]::Read;
@@ -760,7 +740,7 @@ function Test-VirtualMachineCustomScriptExtensionFileUri
         $ext = Get-AzureRmVMCustomScriptExtension -ResourceGroupName $rgname -VMName $vmname -Name $extname;
 
         $expCommand = 'powershell -ExecutionPolicy Unrestricted -file ' + $fileToExecute+ ' ';
-        $expUri = $stoname + '.blob.$env:STORAGEENDPOINTSUFFIX/' + $containerName + '/' + $fileToExecute;
+        $expUri = $stoname + ".blob.$env:STORAGEENDPOINTSUFFIX/" + $containerName + '/' + $fileToExecute;
         Assert-AreEqual $ext.ResourceGroupName $rgname;
         Assert-AreEqual $ext.Name $extname;
         Assert-AreEqual $ext.Publisher $publisher;
@@ -900,7 +880,7 @@ function Test-VirtualMachineAccessExtension
         New-AzureRmVM -ResourceGroupName $rgname -Location $loc -VM $p;
 
         # Virtual Machine Extension
-        $extname = 'csetest';
+        $extname = $rgname + 'ext';
         $extver = '2.0';
         $user2 = "Bar12";
         $password2 = 'FoO@123' + $rgname;
@@ -1191,7 +1171,7 @@ function Test-VirtualMachineBginfoExtension
         Assert-AreEqual $vm1.HardwareProfile.VmSize $vmsize;
 
         # Virtual Machine Extension
-        $extname = 'csetest';
+        $extname = $rgname + 'ext';
         $extver = '2.1';
 
         # Set custom script extension
@@ -1340,7 +1320,7 @@ function Test-VirtualMachineExtensionWithSwitch
         New-AzureRmVM -ResourceGroupName $rgname -Location $loc -VM $p;
 
         # Virtual Machine Extension
-        $extname = 'csetest';
+        $extname = $rgname + 'ext';
         $publisher = 'Microsoft.Compute';
         $exttype = 'CustomScriptExtension';
         $extver = '1.8';

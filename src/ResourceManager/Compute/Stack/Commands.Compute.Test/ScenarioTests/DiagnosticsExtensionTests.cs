@@ -19,14 +19,14 @@ namespace Microsoft.Azure.Commands.Compute.Test.ScenarioTests
 {
     public class DiagnosticsExtensionTests
     {
-        [Fact]
+        [Fact(Skip = "Not suported in Azure stack")]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestDiagnosticsExtensionBasic()
         {
             ComputeTestController.NewInstance.RunPsTest("Test-DiagnosticsExtensionBasic");
         }
 
-        [Fact]
+        [Fact(Skip = "Not suported in Azure stack")]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestDiagnosticsExtensionSepcifyStorageAccountName()
         {
@@ -40,7 +40,7 @@ namespace Microsoft.Azure.Commands.Compute.Test.ScenarioTests
             ComputeTestController.NewInstance.RunPsTest("Test-DiagnosticsExtensionCantListSepcifyStorageAccountKey");
         }
 
-        [Fact]
+        [Fact(Skip = "Not suported in Azure stack")]
         [Trait(Category.AcceptanceType, Category.CheckIn)]
         public void TestDiagnosticsExtensionSupportJsonConfig()
         {

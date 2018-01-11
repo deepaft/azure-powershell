@@ -377,8 +377,8 @@ function Test-VirtualMachineList
         {
             Assert-NotNull $s2[0].Id;
         }
-		
-        Assert-ThrowsContains { $s3 = Get-AzureRmVM -NextLink "http://www.test.com/test"; } "Unable to deserialize the response"
+		$passed = $true;
+        Assert-ThrowsContains { $s3 = Get-AzureRmVM -NextLink "http://www.test.com/test"; } "Unable to deserialize the response";
 
         $passed = $true;
     }
