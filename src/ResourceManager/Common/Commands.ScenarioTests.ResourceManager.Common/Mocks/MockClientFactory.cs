@@ -258,7 +258,7 @@ namespace Microsoft.WindowsAzure.Commands.Common.Test.Mocks
             IAzureClient azureClient = client as IAzureClient;
             if (azureClient != null)
             {
-                azureClient.LongRunningOperationRetryTimeout = 30;
+                azureClient.LongRunningOperationRetryTimeout = 0;
             }
 
             return client;
